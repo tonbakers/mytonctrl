@@ -902,6 +902,8 @@ def CreateSymlinks():
 	file = open(mytonctrl_file, 'wt')
 	file.write("/usr/bin/python3 /usr/src/mytonctrl/mytonctrl.py $@")
 	file.close()
+	with open('/usr/bin/mytonctrl-cli', 'wt') as file:
+		file.write("/usr/bin/python3 /usr/src/mytonctrl/manage.py $@")
 	file = open(fift_file, 'wt')
 	file.write("/usr/bin/ton/crypto/fift $@")
 	file.close()
