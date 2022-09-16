@@ -103,6 +103,7 @@ def move_coins(
             *err.args,
         )
     try:
+        keywords.flags = keywords.flags or []
         ton_controller.MoveCoins(
             source_wallet,
             target_wallet,
