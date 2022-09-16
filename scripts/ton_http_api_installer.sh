@@ -33,10 +33,8 @@ server_config="--host $(hostname -I) --port 8073"
 ton_config="--liteserver-config ${liteserver_config_path} --cdll-path ${libtonlibjson_path} --parallel-requests-per-liteserver 100 --tonlib-keystore ~/keystore/keystore.ks"
 pyton_executable_path="/usr/bin/python3 ton-http-api/pyTON"
 
-set +e
-mkdir ~/keystore
-touch ~/keystore/keystore.ks
-set -e
+trap "mkdir ~/keystore" EXIT
+trap "~/keystore/keystore.ks"
 
 cat > /etc/systemd/system/ton-http-api.service <<- EOM
 [Unit]
