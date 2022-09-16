@@ -79,6 +79,9 @@ fi
 # Запускаю установщик mytoninstaller.py
 echo -e "${COLOR}[3/4]${ENDC} Launching the mytoninstaller.py"
 user=$(ls -lh ${mydir}/${0} | cut -d ' ' -f 3)
+pip3 install poetry
+poetry export --without-hashes --format=requirements.txt > ${SOURCES_DIR}/mytonctrl/requirements.txt
+pip3 install -r ${SOURCES_DIR}/mytonctrl/requirements.txt
 python3 ${SOURCES_DIR}/mytonctrl/mytoninstaller.py -m ${mode} -u ${user} -t ${telemetry} --dump ${dump}
 
 # Выход из программы
