@@ -96,19 +96,21 @@ def move_coins(
             *err.args,
         )
     try:
-        target_wallet: mytoncore.Wallet = ton_controller.GetLocalWallet(target_address)
+        target_wallet: mytoncore.Wallet = ton_controller.GetDestinationAddr(target_address)
     except Exception as err:
         raise error(
             f'Failed to get wallet with name/address "{target_address}"',
             *err.args,
         )
     try:
+        keywords.flags = keywords.flags or []
         ton_controller.MoveCoins(
             source_wallet,
             target_wallet,
             amount,
             **keywords.dict(),
         )
+        message(f'Successfully sent coins to "{target_address}"; Sent amount: "{amount}"')
     except (BalanceIsTooLow, WalletAccountNotInitialized) as err:
         raise error(
             f'Failed to make coins transfer.',
