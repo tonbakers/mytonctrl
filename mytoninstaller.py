@@ -31,7 +31,7 @@ def Init():
 	console.name = "MyTonInstaller"
 	console.color = console.RED
 	console.AddItem("status", Status, "Print TON component status")
-	console.AddItem("enable", Enable, "Enable some function: 'FN' - Full node, 'VC' - Validator console, 'LS' - Liteserver, 'DS' - DHT-Server, 'JR' - jsonrpc, 'PT' - pyTONv3. Example: 'enable FN'")
+	console.AddItem("enable", Enable, "Enable some function: 'FN' - Full node, 'VC' - Validator console, 'LS' - Liteserver, 'DS' - DHT-Server, 'JR' - jsonrpc, 'PT' - pyTONv3, THA - 'TON HTTP API' Example: 'enable FN'")
 	console.AddItem("update", Enable, "Update some function: 'JR' - jsonrpc.  Example: 'update JR'") 
 	console.AddItem("plsc", PrintLiteServerConfig, "Print LiteServer config")
 	console.AddItem("clcf", CreateLocalConfigFile, "CreateLocalConfigFile")
@@ -197,6 +197,8 @@ def Event(name):
 		EnableJsonRpc()
 	if name == "enablePT":
 		EnablePytonv3()
+	if name == 'enableTHA':
+		enable_ton_http_api()
 	if name == "clc":
 		ix = sys.argv.index("-i")
 		initBlock_b64 = sys.argv[ix+1]
@@ -1012,6 +1014,18 @@ def EnablePytonv3():
 		text = "EnablePytonv3 - {red}Error{endc}"
 	ColorPrint(text)
 #end define
+
+
+def enable_ton_http_api() -> None:
+	local.AddLog("start \"enable_ton_http_api\" function", "debug")
+	user = local.buffer['user']
+	exit_code = RunAsRoot(['bash', '/usr/src/mytonctrl/scripts/ton_http_api_installer.sh', '-u', user])
+	if exit_code == 0:
+		text = "Enable TON HTTP API - {green}OK{endc}"
+	else:
+		text = "Enable TON HTTP API - {red}Error{endc}"
+	ColorPrint(text)
+
 
 def str2b64(s):
 	b = s.encode("utf-8")
