@@ -60,7 +60,7 @@ LimitMEMLOCK=infinity
 [Install]
 WantedBy=multi-user.target
 EOM
-
+systemctl daemon-reload
 systemctl restart ton-http-api
 
 echo -e "${COLOR}[3/3]${ENDC} ton-http-api installation complete"
