@@ -34,7 +34,7 @@ Wallet work-chain: {}
 
 
 class FlagArguments(BaseModel):
-    flags: List[str]
+    flags: Optional[List[str]]
     timeout: Optional[int]
     sub_wallet: Optional[str]
 
