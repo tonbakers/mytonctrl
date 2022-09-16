@@ -110,6 +110,7 @@ def move_coins(
             amount,
             **keywords.dict(),
         )
+        message(f'Successfully sent coins to "{target_address}"; Sent amount: "{amount}"')
     except (BalanceIsTooLow, WalletAccountNotInitialized) as err:
         raise error(
             f'Failed to make coins transfer.',
