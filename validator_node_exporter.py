@@ -48,7 +48,8 @@ if __name__ == '__main__':
     while True:
         try:
             get_metrics()
-            time.sleep(60 * 10)
+            time.sleep(60)
+            message(f'Waiting for "{60}" seconds')
         except KeyboardInterrupt:
             raise message('Stopped by user!', exit_after=True)
         except Exception as err:
