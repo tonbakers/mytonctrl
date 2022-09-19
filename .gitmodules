@@ -4,3 +4,6 @@
 [submodule "mypyconsole"]
 	path = mypyconsole
 	url = https://github.com/igroman787/mypyconsole.git
+[submodule "ton-http-api"]
+	path = ton-http-api
+	url = https://github.com/toncenter/ton-http-api.git
