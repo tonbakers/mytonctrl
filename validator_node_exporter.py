@@ -1,4 +1,7 @@
 import time
+
+import click
+
 from decimal import Decimal
 from typing import List, Optional
 
@@ -9,6 +12,7 @@ from prometheus_client.metrics import Histogram
 
 from mytoncore import MyTonCore, local
 from src.ton.factory import get_ton_controller
+from src.utils.click_messages import error, message, warning
 
 validator_efficiency = Histogram(
     'validator_efficiency',
@@ -26,7 +30,7 @@ class ValidatorInfo(BaseModel):
 
 
 def get_metrics():
-    print('Getting metrics')
+    warning('Trying to request validators information.')
     # Disable built-in logging
     local.AddLog = lambda *args: None
     ton_core.SetSettings('timeout', 300)
@@ -34,6 +38,7 @@ def get_metrics():
         ValidatorInfo(**data)
         for data in ton_core.GetValidatorsList(False)
     ]
+    message('Validators information fetched, pushing to "prometheus".')
     for validator in data:
         validator_efficiency.observe(float(validator.efficiency))
 
@@ -43,10 +48,11 @@ if __name__ == '__main__':
     while True:
         try:
             get_metrics()
+            time.sleep(60 * 10)
         except KeyboardInterrupt:
-            print('Stopped by user!')
-            break
+            raise message('Stopped by user!', exit_after=True)
         except Exception as err:
-            print(err)
-            break
-        time.sleep(60 * 10)
+            raise error(
+                'Occurred unhandled exception!',
+                *err.args,
+            )
