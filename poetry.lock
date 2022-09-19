@@ -53,6 +53,17 @@ optional = false
 python-versions = ">=3.5"
 
 [[package]]
+name = "prometheus-client"
+version = "0.14.1"
+description = "Python client for the Prometheus monitoring system."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+twisted = ["twisted"]
+
+[[package]]
 name = "psutil"
 version = "5.9.2"
 description = "Cross-platform lib for process and system monitoring in Python."
@@ -119,8 +130,8 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = "3.8.12"
-content-hash = "86ef2928cd78d95a916328f7153a815f31fd028959c48b2c933bf9bc4f49deed"
+python-versions = "^3.8"
+content-hash = "66f63ba25f235a23dc0a678f8654f81e20c8d18d1a33e24c3c2fcf842e377b4b"
 
 [metadata.files]
 certifi = []
@@ -135,6 +146,10 @@ colorama = [
 ]
 crc16 = []
 idna = []
+prometheus-client = [
+    {file = "prometheus_client-0.14.1-py3-none-any.whl", hash = "sha256:522fded625282822a89e2773452f42df14b5a8e84a86433e3f8a189c1d54dc01"},
+    {file = "prometheus_client-0.14.1.tar.gz", hash = "sha256:5459c427624961076277fdc6dc50540e2bacb98eebde99886e59ec55ed92093a"},
+]
 psutil = []
 pydantic = []
 requests = []
