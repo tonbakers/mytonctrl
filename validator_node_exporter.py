@@ -1,7 +1,5 @@
 import time
 
-import click
-
 from decimal import Decimal
 from typing import List, Optional
 
