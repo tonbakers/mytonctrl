@@ -1,7 +1,10 @@
+import json
+
 import click
 
 import mytonctrl
 import mytoncore
+import mytoninstaller as installer
 
 from decimal import Decimal
 from typing import Any, Dict, Final, List, Optional
@@ -369,6 +372,33 @@ def upgrade(url: str, branch: str) -> None:
             *err.args,
         )
     raise message('Successfully upgraded!', exit_after=True)
+
+
+@main.command(
+    'create-config',
+    help='Generates config for local validator.'
+)
+@click.argument(
+    'PATH',
+    type=click.STRING,
+    default='/usr/bin/ton/local.config.json',
+)
+def get_config(path: str) -> None:
+    message('Creating config file based on local validator.')
+    try:
+        installer.CreateLocalConfig(
+            installer.GetInitBlock(), localConfigPath=path,
+        )
+    except KeyError as err:
+        raise error(
+            'Failed to get configuration key for:',
+            *err.args,
+        )
+    except Exception as err:
+        raise error(
+            'Failed to create config based on validator.',
+            *err.args,
+        )
 
 
 if __name__ == '__main__':
