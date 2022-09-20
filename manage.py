@@ -380,18 +380,48 @@ def upgrade(url: str, branch: str) -> None:
     'create-config',
     help='Generates config for local validator.'
 )
-@click.argument(
-    'PATH',
+@click.option(
+    '--path',
     type=click.STRING,
     default='/usr/bin/ton/local.config.json',
     required=False,
 )
-def get_config(path: str) -> None:
+@click.option(
+    '--config-path',
+    type=click.STRING,
+    default='/usr/bin/ton/global.config.json',
+    required=False,
+)
+def get_config(path: Optional[str], config_path: Optional[str]) -> None:
     message('Creating config file based on local validator.')
+    init_config_path: str = config_path or '/usr/bin/ton/global.config.json'
+    create_config_path: str = path or '/usr/bin/ton/local.config.json'
     try:
-        installer.local.buffer['user'] = 'root'
-        installer.local.buffer['myPath'] = path
-        installer.CreateLocalConfigFile(())
+        message(f'Reading GLOBAL config from: "{init_config_path}"')
+        with open(init_config_path, 'r+') as ton_config:
+            ton_configuration: Dict[str, Any] = json.load(ton_config)
+        
+        message(f'Creating LOCAL config at: "{create_config_path}"')
+        with open(create_config_path, 'w+') as local_config:
+            init_block = installer.GetInitBlock()
+            lite_server_config = installer.GetLiteServerConfig()
+            ton_configuration.update({
+                'liteservers': [lite_server_config],
+                'validator': {
+                    'init_block': {
+                        'seqno': init_block['seqno'],
+                        'root_hash': installer.hex2b64(init_block['rootHash']),
+                        'file_hash': installer.hex2b64(init_block['fileHash']),
+                    },
+                },
+            })
+            json.dump(ton_configuration, local_config)
+    except FileNotFoundError as err:
+        raise error(
+            f'TON configuration file on found on path "{init_config_path}".',
+            *err.args[1:],
+        )
+    
     except KeyError as err:
         raise error(
             'Failed to get configuration key for:',
@@ -402,7 +432,7 @@ def get_config(path: str) -> None:
             'Failed to create config based on validator.',
             *err.args,
         )
-    raise message(f'Created config-file on path: "{path}"', exit_after=True)
+    raise message(f'Created config-file on path: "{create_config_path}"', exit_after=True)
 
 
 if __name__ == '__main__':
