@@ -331,11 +331,13 @@ def vote(offer_hashes: str):
     'URL',
     type=click.STRING,
     default=None,
+    required=False,
 )
 @click.argument(
     'BRANCH',
     type=click.STRING,
     default=None,
+    required=False,
 )
 def update(url: str, branch: str) -> None:
     # Patching base exit to use custom
