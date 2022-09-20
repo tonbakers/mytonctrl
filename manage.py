@@ -384,6 +384,7 @@ def upgrade(url: str, branch: str) -> None:
     'PATH',
     type=click.STRING,
     default='/usr/bin/ton/local.config.json',
+    required=False,
 )
 def get_config(path: str) -> None:
     message('Creating config file based on local validator.')
@@ -401,6 +402,7 @@ def get_config(path: str) -> None:
             'Failed to create config based on validator.',
             *err.args,
         )
+    raise message(f'Created config-file on path: "{path}"', exit_after=True)
 
 
 if __name__ == '__main__':
