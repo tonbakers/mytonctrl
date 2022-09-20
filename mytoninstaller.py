@@ -15,9 +15,9 @@ defaultLocalConfigPath = "/usr/bin/ton/local.config.json"
 def Init():
 	local.db["config"]["isStartOnlyOneProcess"] = False
 	local.db["config"]["logLevel"] = "debug"
-	local.db["config"]["isIgnorLogWarning"] = True # disable warning
+	local.db["config"]["isIgnorLogWarning"] = True  # disable warning
 	local.Run()
-	local.db["config"]["isIgnorLogWarning"] = False # enable warning
+	local.db["config"]["isIgnorLogWarning"] = False  # enable warning
 
 
 	# create variables
