@@ -918,7 +918,7 @@ def CreateSymlinks():
 		file.close()
 		args = ["chmod", "+x", validator_console_file]
 		subprocess.run(args)
-	args = ["chmod", "+x", mytonctrl_file, fift_file, liteclient_file]
+	args = ["chmod", "+x", mytonctrl_file, fift_file, liteclient_file, '/usr/bin/mytonctrl-cli']
 	subprocess.run(args)
 
 	# env
