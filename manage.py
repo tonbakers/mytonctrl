@@ -386,9 +386,9 @@ def upgrade(url: str, branch: str) -> None:
 def get_config(path: str) -> None:
     message('Creating config file based on local validator.')
     try:
-        installer.CreateLocalConfig(
-            installer.GetInitBlock(), localConfigPath=path,
-        )
+        installer.local.buffer['user'] = 'root'
+        installer.local.buffer['myPath'] = path
+        installer.CreateLocalConfigFile(())
     except KeyError as err:
         raise error(
             'Failed to get configuration key for:',
