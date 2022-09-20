@@ -416,7 +416,7 @@ def get_config(path: Optional[str], config_path: Optional[str]) -> None:
                     },
                 },
             })
-            json.dump(ton_configuration, local_config)
+            json.dump(ton_configuration, local_config, indent=4)
     except FileNotFoundError as err:
         raise error(
             f'TON configuration file on found on path "{init_config_path}".',
