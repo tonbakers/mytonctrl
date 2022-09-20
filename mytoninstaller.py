@@ -157,7 +157,7 @@ def CreateLocalConfig(initBlock, localConfigPath=defaultLocalConfigPath):
 	text = json.dumps(data, indent=4)
 
 	# write local config file
-	file = open(localConfigPath, 'wt')
+	file = open(localConfigPath, 'w+')
 	file.write(text)
 	file.close()
 
