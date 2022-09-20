@@ -396,6 +396,7 @@ def get_config(path: Optional[str], config_path: Optional[str]) -> None:
     message('Creating config file based on local validator.')
     init_config_path: str = config_path or '/usr/bin/ton/global.config.json'
     create_config_path: str = path or '/usr/bin/ton/local.config.json'
+    installer.Init()
     try:
         message(f'Reading GLOBAL config from: "{init_config_path}"')
         with open(init_config_path, 'r+') as ton_config:
