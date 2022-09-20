@@ -1,4 +1,5 @@
 import json
+import os
 
 import click
 
@@ -7,8 +8,9 @@ import mytoncore
 import mytoninstaller as installer
 
 from decimal import Decimal
-from typing import Any, Dict, Final, List, Optional
 from enum import Enum
+from typing import Any, Dict, Final, List, Optional
+from pathlib import Path
 
 from pydantic.main import BaseModel
 from mypylib.mypylib import MyPyClass
@@ -382,17 +384,27 @@ def upgrade(url: str, branch: str) -> None:
 )
 @click.option(
     '--path',
-    type=click.STRING,
     default='/usr/bin/ton/local.config.json',
+    type=click.STRING,
     required=False,
 )
 @click.option(
     '--config-path',
-    type=click.STRING,
     default='/usr/bin/ton/global.config.json',
+    type=click.STRING,
     required=False,
 )
-def get_config(path: Optional[str], config_path: Optional[str]) -> None:
+@click.option(
+    '--config-ton-http-api',
+    default=None,
+    type=click.STRING,
+    required=False,
+)
+def get_config(
+    path: Optional[str],
+    config_path: Optional[str],
+    config_ton_http_api: Optional[str],
+) -> None:
     message('Creating config file based on local validator.')
     init_config_path: str = config_path or '/usr/bin/ton/global.config.json'
     create_config_path: str = path or '/usr/bin/ton/local.config.json'
@@ -433,6 +445,12 @@ def get_config(path: Optional[str], config_path: Optional[str]) -> None:
             'Failed to create config based on validator.',
             *err.args,
         )
+    if config_ton_http_api is not None:
+        file_path = Path(os.getcwd()) / Path(local_config.name)
+        if not file_path.exists():
+            os.system(f'cp {local_config.name}')
+        else:
+            os.system(f'cp {file_path} {config_ton_http_api}')
     raise message(f'Created config-file on path: "{create_config_path}"', exit_after=True)
 
 
