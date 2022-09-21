@@ -10,9 +10,6 @@ scrape_configs:
   - job_name: 'prometheus'
     static_configs:
       - targets: [localhost:9090]
-    basic_auth:
-      username: admin
-      password: admin
 
   - job_name: validator_efficiency
     static_configs:

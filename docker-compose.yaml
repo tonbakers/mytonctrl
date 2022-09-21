@@ -12,7 +12,8 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
-    restart: always
+    command:
+      - --web.config.file=web.yml
     ports:
       - "9090:9090"
     environment:
@@ -22,6 +23,7 @@ services:
         source: ./prometheus.yml
         target: /etc/prometheus/prometheus.yml
         read_only: true
+    restart: always
 
 
   ton-http-api:
