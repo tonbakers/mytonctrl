@@ -904,7 +904,7 @@ def CreateSymlinks():
 	file = open(mytonctrl_file, 'wt')
 	file.write("/usr/bin/python3 /usr/src/mytonctrl/mytonctrl.py $@")
 	file.close()
-	with open('/usr/bin/mytonctrl-cli', 'wt') as file:
+	with open('/usr/bin/mytoncl', 'wt') as file:
 		file.write("/usr/bin/python3 /usr/src/mytonctrl/manage.py $@")
 	file = open(fift_file, 'wt')
 	file.write("/usr/bin/ton/crypto/fift $@")
@@ -918,7 +918,7 @@ def CreateSymlinks():
 		file.close()
 		args = ["chmod", "+x", validator_console_file]
 		subprocess.run(args)
-	args = ["chmod", "+x", mytonctrl_file, fift_file, liteclient_file, '/usr/bin/mytonctrl-cli']
+	args = ["chmod", "+x", mytonctrl_file, fift_file, liteclient_file, '/usr/bin/mytoncl']
 	subprocess.run(args)
 
 	# env
