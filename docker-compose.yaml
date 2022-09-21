@@ -21,11 +21,11 @@ services:
     volumes:
       - type: bind
         source: ./prometheus.yml
-        target: /etc/prometheus/prometheus.yml
+        target: /prometheus/prometheus.yml
         read_only: true
       - type: bind
         source: ./prometheus-web-config.yml
-        target: /etc/prometheus/web.yml
+        target: /prometheus/web.yml
         read_only: true
     restart: always
 
