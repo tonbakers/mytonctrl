@@ -21,6 +21,7 @@ services:
       - type: bind
         source: ./prometheus.yml
         target: /etc/prometheus/prometheus.yml
+        read_only: true
 
 
   ton-http-api:
