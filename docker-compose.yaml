@@ -1,6 +1,15 @@
 version: '3.9'
 
 services:
+  validator-efficiency:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5561:5561"
+    restart: always
+
+
   prometheus:
     image: prom/prometheus:latest
     restart: always
@@ -47,6 +56,11 @@ services:
       interval: 15s
       timeout: 3s
       retries: 12
+    volumes:
+      - type: bind
+        source: /usr/bin/ton/local.config.json
+        target: ./private/local.config.json
+        read_only: true
 
 
 secrets:
