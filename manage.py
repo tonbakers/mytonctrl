@@ -50,7 +50,7 @@ class WalletStatusInfoGetEnum(str, Enum):
 
 
 @main.command(
-    'move-coins',
+    'mc',
     help='Move coins to specified account/wallet.',
 )
 @click.argument('wallet-name', type=click.STRING)
@@ -246,7 +246,7 @@ def get_status(status_type: Optional[str]) -> None:
 
 
 @main.command(
-    'get-settings',
+    'get',
     help='Get network settings.',
 )
 @click.argument(
@@ -265,7 +265,7 @@ def get_settings(name: str) -> None:
 
 
 @main.command(
-    'set-settings',
+    'set',
     help='Set network settings.',
 )
 @click.argument(
