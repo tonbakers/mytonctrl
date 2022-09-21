@@ -1,7 +1,10 @@
 import json
 import os
+import getpass
 
 import click
+import bcrypt
+import yaml
 
 import mytonctrl
 import mytoncore
@@ -277,7 +280,7 @@ def get_settings(name: str) -> None:
     'value',
     required=True,
 )
-def get_settings(name: str, value: Any) -> None:
+def set_settings(name: str, value: Any) -> None:
     ton_controller: mytoncore.MyTonCore = get_ton_controller()
     ton_controller.SetSettings(name, value)
     value = ton_controller.GetSettings(name)
@@ -452,6 +455,38 @@ def get_config(
         else:
             os.system(f'cp {file_path} {config_ton_http_api}')
     raise message(f'Created config-file on path: "{create_config_path}"', exit_after=True)
+
+
+@main.command(
+    'add-prom-user',
+    help='Command to give user access to the Prometheus web interface.',
+)
+@click.argument(
+    'USERNAME',
+    type=click.STRING,
+    required=True,
+)
+@click.option(
+    '--config-path',
+    default='./prometheus-web-config.yml',
+    type=click.STRING,
+)
+def add_prometheus_user(username: str, config_path: str) -> None:
+    message('Type your password which be used to access web interface.')
+    password: str = getpass.getpass('Password: ')
+    hashed_password: str = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    try:
+        with open(config_path, 'r') as file:
+            data: Dict[str, Any] = yaml.load(file, yaml.Loader)
+    except FileNotFoundError as err:
+        raise error(
+            f'Config file with path "{config_path}" is not found!',
+            *err.args,
+        )
+    data['basic_auth_users'].update({username: hashed_password})
+    with open(config_path, 'w') as file:
+        yaml.dump(data, stream=file, Dumper=yaml.Dumper)
+    raise message(f'Successfully set password for user "{username}".', exit_after=True)
 
 
 if __name__ == '__main__':
