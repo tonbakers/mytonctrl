@@ -145,7 +145,7 @@ def Update(args):
 	# Get author, repo, branch
 	author, repo = GetGitAuthorAndRepo(gitPath)
 	branch = GetGitBranch(gitPath)
-	
+
 	# Set author, repo, branch
 	data = GetAuthorRepoBranchFromArgs(args)
 	author = data.get("author", author)
@@ -159,6 +159,7 @@ def Update(args):
 		text = "Update - {green}OK{endc}"
 	else:
 		text = "Update - {red}Error{endc}"
+	exitCode = RunAsRoot(['bash', '/usr/src/mytonctrl/scripts/install.sh', '-m', 'full'])
 	ColorPrint(text)
 	local.Exit()
 #end define

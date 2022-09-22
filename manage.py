@@ -1,6 +1,7 @@
 import json
 import os
 import getpass
+import struct
 
 import click
 import bcrypt
@@ -487,6 +488,71 @@ def add_prometheus_user(username: str, config_path: str) -> None:
     with open(config_path, 'w') as file:
         yaml.dump(data, stream=file, Dumper=yaml.Dumper)
     raise message(f'Successfully set password for user "{username}".', exit_after=True)
+
+
+@main.command(
+    'addr-to-b64',
+    help='Converts given address to base64 string.',
+)
+@click.argument(
+    'ADDRESS',
+    type=click.STRING,
+    required=True,
+    default='UQCVUtsZssLQoDJipZr4SgsLxYssHtv809qCEBVGCsCHgUtU'
+)
+def convert_full_address_to_b64(address: str) -> None:
+    ton_core: mytoncore.MyTonCore = get_ton_controller()
+    # some = ton_core.AddrFull2AddrB64(addrFull=address)
+    encoded_address: str = ton_core.AddrFile2Object(mytoncore.Pool('SomeShit', address))
+    raise message(
+        'Generated address:',
+        encoded_address,
+        exit_after=True,
+    )
+
+
+@main.command(
+    'write-addr',
+    help='Method for writing data to addr file',
+)
+@click.argument(
+    'RAW_ADDRESS',
+    type=click.STRING,
+    required=True,
+)
+@click.argument(
+    'FILE_PATH',
+    type=click.STRING,
+    required=True,
+)
+@click.option(
+    '-n', '--negative-work-chain',
+    default=False,
+    is_flag=True,
+    help='Click cannot parse signed integers from cli, so to send "-1" work-chain '
+         'use this flag.',
+)
+def write_to_addr_file(raw_address: str, file_path: str, negative_work_chain: bool) -> None:
+    workchain, address = raw_address.split(':')
+    address: str
+    workchain: int = int(workchain)
+    if negative_work_chain is True:
+        workchain = -workchain
+    message(
+        'Using address & work-chain to generate *.addr file:',
+        f'Workchain: {workchain}',
+        f'Address: {address}'
+    )
+    encoded_address = bytearray.fromhex(address)
+    encoded_workchain = struct.pack('i', workchain)
+    encoded_address.extend(encoded_workchain)
+    with open(file_path, 'wb+') as file:
+        file.write(encoded_address)
+    path = f'{os.getcwd()}' / Path(file_path)
+    message(
+        f'Successfully created *.addr file at: "{path}"',
+        exit_after=True,
+    )
 
 
 if __name__ == '__main__':
