@@ -491,27 +491,6 @@ def add_prometheus_user(username: str, config_path: str) -> None:
 
 
 @main.command(
-    'addr-to-b64',
-    help='Converts given address to base64 string.',
-)
-@click.argument(
-    'ADDRESS',
-    type=click.STRING,
-    required=True,
-    default='UQCVUtsZssLQoDJipZr4SgsLxYssHtv809qCEBVGCsCHgUtU'
-)
-def convert_full_address_to_b64(address: str) -> None:
-    ton_core: mytoncore.MyTonCore = get_ton_controller()
-    # some = ton_core.AddrFull2AddrB64(addrFull=address)
-    encoded_address: str = ton_core.AddrFile2Object(mytoncore.Pool('SomeShit', address))
-    raise message(
-        'Generated address:',
-        encoded_address,
-        exit_after=True,
-    )
-
-
-@main.command(
     'write-addr',
     help='Method for writing data to addr file',
 )
