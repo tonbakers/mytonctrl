@@ -6,15 +6,15 @@ from typing import List, Optional
 from pydantic.main import BaseModel
 from pydantic.fields import Field
 from prometheus_client.exposition import start_http_server
-from prometheus_client.metrics import Histogram
+from prometheus_client.metrics import Gauge
 
 from mytoncore import MyTonCore, local
 from src.ton.factory import get_ton_controller
 from src.utils.click_messages import error, message, warning
 
-validator_efficiency = Histogram(
+validator_efficiency = Gauge(
     'validator_efficiency',
-    'The histogram to show TON validators efficiency.',
+    'The gauge metric to show TON validators efficiency.',
 )
 ton_core: MyTonCore = get_ton_controller()
 
