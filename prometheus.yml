@@ -13,4 +13,4 @@ scrape_configs:
 
   - job_name: validator_efficiency
     static_configs:
-      - targets: ['localhost:5561']
+      - targets: ['161.97.154.129:5561']  # Must be set an address of host
