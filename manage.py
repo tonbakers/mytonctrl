@@ -436,6 +436,8 @@ def get_config(
         if response.status_code != 200:
             raise error('Failed to get response from official TON site.')
         ton_configuration: Dict[str, Any] = response.json()
+        with open(init_config_path, 'w+') as missing_config_file:
+            json.dump(ton_configuration, missing_config_file, indent=4)
     try:
         message(f'Creating LOCAL config at: "{create_config_path}"')
         with open(create_config_path, 'w+') as local_config:
