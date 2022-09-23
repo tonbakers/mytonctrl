@@ -30,13 +30,14 @@ liteserver_config_path="/usr/bin/ton/global.config.json"
 libtonlibjson_path="/usr/bin/ton/tonlib/libtonlibjson.so"
 
 server_config="--host $(hostname -I) --port 8073"
-ton_config="--liteserver-config ${liteserver_config_path} --cdll-path ${libtonlibjson_path} --parallel-requests-per-liteserver 100 --tonlib-keystore ~/keystore/keystore.ks"
+ton_config="--liteserver-config ${liteserver_config_path} --cdll-path ${libtonlibjson_path} --parallel-requests-per-liteserver 100 --tonlib-keystore ~/keystore"
 pyton_executable_path="/usr/bin/python3 ton-http-api/pyTON"
-
-keystore_contents="$(cat ~/keystore/keystore.ks)"
-rm -rf ~/keystore
-mkdir ~/keystore
-echo "${keystore_contents}" >~/keystore/keystore.ks
+if [-d ~/keystore ]; then
+  cp -r ~/keystore /tmp
+  rm -rf ~/keystore
+  cp -r /tmp/keystore ~
+else
+  mkdir ~/keystore
 
 cat > /etc/systemd/system/ton-http-api.service <<- EOM
 [Unit]
@@ -74,7 +75,6 @@ else
   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
   sudo apt update -y
   sudo apt install -y docker-ce
-
 fi
 
 echo -e "${COLOR}[4/4]${ENDC} installing docker-compose"
@@ -85,5 +85,6 @@ else
   sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
   sudo chmod +x /usr/local/bin/docker-compose
   docker-compose --version && echo "docker-compose command not found! Try to install it by your self."
+fi
 
 exit 0
