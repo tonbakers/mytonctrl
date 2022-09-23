@@ -45,7 +45,7 @@ services:
       - TON_API_CACHE_REDIS_TIMEOUT
       - TON_API_LOGS_JSONIFY
       - TON_API_LOGS_LEVEL
-      - TON_API_TONLIB_LITESERVER_CONFIG=./private/local.config.json
+      - TON_API_TONLIB_LITESERVER_CONFIG=/usr/bin/ton/local.config.json
       - TON_API_TONLIB_KEYSTORE
       - TON_API_TONLIB_PARALLEL_REQUESTS_PER_LITESERVER
       - TON_API_TONLIB_CDLL_PATH
@@ -72,7 +72,7 @@ services:
 
 secrets:
   liteserver_config:
-    file: ${TON_API_TONLIB_LITESERVER_CONFIG:-./private/local.config.json}
+    file: ${TON_API_TONLIB_LITESERVER_CONFIG:-/usr/bin/ton/local.config.json}
 
 
 networks:
