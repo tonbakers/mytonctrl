@@ -18,7 +18,7 @@ do
 	esac
 done
 
-echo -e "${COLOR}[1/4]${ENDC} Installing \"ton-http-api\""
+echo -e "${COLOR}[1/5]${ENDC} Installing \"ton-http-api\""
 cd /usr/src
 rm -rf ton-http-api
 
@@ -28,7 +28,7 @@ cd /usr/src/ton-http-api/ton-http-api
 python3 setup.py install
 
 
-echo -e "${COLOR}[2/4]${ENDC} Add \"ton-http-api\" to startup"
+echo -e "${COLOR}[2/5]${ENDC} Add \"ton-http-api\" to startup"
 
 liteserver_config_path="/usr/bin/ton/global.config.json"
 libtonlibjson_path="/usr/bin/ton/tonlib/libtonlibjson.so"
@@ -53,13 +53,15 @@ After=network.target,docker.service
 StartLimitIntervalSec=0
 StartLimitBurst=5
 StartLimitIntervalSec=10
+OnFailure=sudo wall -n "Stopping \"ton-http-api\" due run errors. This operation can take few minutes."
 
 [Service]
 Type=simple
 Restart=always
 RestartSec=30
-ExecStart=docker-compose -f ${mytonctrl_sources}/docker-compose.yaml build && docker-compose -f ${mytonctrl_sources}/docker-compose.yaml up -d ton-http-api
-ExecStopPost=echo "Stopping ton-http-api. This operation can take few minutes." | wall
+ExecStartPre=docker-compose -f ${mytonctrl_sources}/docker-compose.yaml build
+ExecStart=docker-compose -f ${mytonctrl_sources}/docker-compose.yaml up -d ton-http-api
+ExecStopPost=docker-compose -f ${mytonctrl_sources}/docker-compose.yaml down ton-http-api
 User=${user}
 LimitNOFILE=infinity
 LimitNPROC=infinity
@@ -68,10 +70,8 @@ LimitMEMLOCK=infinity
 [Install]
 WantedBy=multi-user.target
 EOM
-systemctl daemon-reload
-systemctl restart ton-http-api
 
-echo -e "${COLOR}[3/4]${ENDC} Installing \"docker-engine\""
+echo -e "${COLOR}[3/5]${ENDC} Installing \"docker-engine\""
 if [ -f /usr/bin/docker ]; then
   echo -e "\"Docker-engine\" already installed"
 else
@@ -84,7 +84,7 @@ else
   sudo apt install -y docker-ce
 fi
 
-echo -e "${COLOR}[4/4]${ENDC} Installing \"docker-compose\""
+echo -e "${COLOR}[4/5]${ENDC} Installing \"docker-compose\""
 if [ -f /usr/local/bin/docker-compose ]; then
   echo "\"Docker-compose\" already installed"
 else
@@ -93,5 +93,10 @@ else
   sudo chmod +x /usr/local/bin/docker-compose
   docker-compose --version && echo "\"docker-compose\" command not found! Try to install it by your self."
 fi
+
+echo -e "${COLOR}[5/5]${ENDC} Reloading systemd daemon and starting \"ton-http-api\""
+
+systemctl daemon-reload
+systemctl restart ton-http-api
 
 exit 0
