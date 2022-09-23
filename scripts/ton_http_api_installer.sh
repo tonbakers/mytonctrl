@@ -38,6 +38,7 @@ if [-d ~/keystore ]; then
   cp -r /tmp/keystore ~
 else
   mkdir ~/keystore
+fi
 
 cat > /etc/systemd/system/ton-http-api.service <<- EOM
 [Unit]
