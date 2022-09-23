@@ -32,7 +32,7 @@ libtonlibjson_path="/usr/bin/ton/tonlib/libtonlibjson.so"
 server_config="--host $(hostname -I) --port 8073"
 ton_config="--liteserver-config ${liteserver_config_path} --cdll-path ${libtonlibjson_path} --parallel-requests-per-liteserver 100 --tonlib-keystore ~/keystore"
 pyton_executable_path="/usr/bin/python3 ton-http-api/pyTON"
-if [-d ~/keystore ]; then
+if [ -d ~/keystore ]; then
   cp -r ~/keystore /tmp
   rm -rf ~/keystore
   cp -r /tmp/keystore ~
