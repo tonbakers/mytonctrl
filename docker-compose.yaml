@@ -66,12 +66,12 @@ services:
         retries: 12
     volumes:
       - /usr/bin/ton/tonlib/libtonlibjson.so:/tonlib/libtonlibjson.so
-      - /usr/bin/ton/global.config.json:/global.config.json
+      - /usr/bin/ton/local.config.json:/global.config.json
 
 
 secrets:
   liteserver_config:
-    file: ${TON_API_TONLIB_LITESERVER_CONFIG:-/global.config.json}
+    file: ${TON_API_TONLIB_LITESERVER_CONFIG:-/usr/bin/ton/local.config.json}
 
 
 networks:
