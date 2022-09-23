@@ -100,6 +100,7 @@ fi
 echo -e "${COLOR}[6/6]${ENDC} Reloading systemd daemon and starting \"ton-http-api\""
 
 systemctl daemon-reload
-systemctl restart ton-http-api
+systemctl restart ton-http-api.service
+systemctl start ton-http-api.service
 
 exit 0
