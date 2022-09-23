@@ -154,13 +154,15 @@ def Update(args):
 
 	# Run script
 	runArgs = ["bash", "/usr/src/mytonctrl/scripts/update.sh", "-a", author, "-r", repo, "-b", branch]
-	exitCode = RunAsRoot(runArgs)
-	if exitCode == 0:
-		text = "Update - {green}OK{endc}"
-	else:
-		text = "Update - {red}Error{endc}"
-	exitCode = RunAsRoot(['bash', '/usr/src/mytonctrl/scripts/install.sh', '-m', 'full'])
-	ColorPrint(text)
+	exitCode_update = RunAsRoot(runArgs)
+	exitCode_install = RunAsRoot(['bash', '/usr/src/mytonctrl/scripts/install.sh', '-m', 'full'])
+	for exit_code in [exitCode_update, exitCode_install]:
+		if exit_code == 0:
+			text = "Update - {green}OK{endc}"
+		else:
+			text = "Update - {red}Error{endc}"
+			local.Exit()
+		ColorPrint(text)
 	local.Exit()
 #end define
 
