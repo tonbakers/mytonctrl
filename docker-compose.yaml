@@ -71,7 +71,7 @@ services:
 
 secrets:
   liteserver_config:
-    file: ${TON_API_TONLIB_LITESERVER_CONFIG:-/usr/bin/ton/local.config.json}
+    file: ${TON_API_TONLIB_LITESERVER_CONFIG:-./private/mainnet.json}
 
 
 networks:
