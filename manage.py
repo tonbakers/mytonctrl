@@ -5,6 +5,7 @@ import struct
 
 import click
 import bcrypt
+import requests
 import yaml
 
 import mytonctrl
@@ -404,10 +405,17 @@ def upgrade(url: str, branch: str) -> None:
     type=click.STRING,
     required=False,
 )
+@click.option(
+    '--config-url',
+    default='https://ton.org/global-config.json',
+    type=click.STRING,
+    required=False,
+)
 def get_config(
     path: Optional[str],
     config_path: Optional[str],
     config_ton_http_api: Optional[str],
+    config_url: Optional[str],
 ) -> None:
     message('Creating config file based on local validator.')
     init_config_path: str = config_path or '/usr/bin/ton/global.config.json'
@@ -417,7 +425,18 @@ def get_config(
         message(f'Reading GLOBAL config from: "{init_config_path}"')
         with open(init_config_path, 'r+') as ton_config:
             ton_configuration: Dict[str, Any] = json.load(ton_config)
-        
+
+    except FileNotFoundError as err:
+        error(
+            f'Configuration of TON blockchain not found on your drive at: "{init_config_path}".',
+            *err.args[1:],
+            'Will try to download configuration from official TON site.',
+        )
+        response = requests.get(config_url)
+        if response.status_code != 200:
+            raise error('Failed to get response from official TON site.')
+        ton_configuration: Dict[str, Any] = response.json()
+    try:
         message(f'Creating LOCAL config at: "{create_config_path}"')
         with open(create_config_path, 'w+') as local_config:
             init_block = installer.GetInitBlock()
@@ -435,10 +454,9 @@ def get_config(
             json.dump(ton_configuration, local_config, indent=4)
     except FileNotFoundError as err:
         raise error(
-            f'TON configuration file on found on path "{init_config_path}".',
+            f'TON configuration file not found on path "{init_config_path}".',
             *err.args[1:],
         )
-    
     except KeyError as err:
         raise error(
             'Failed to get configuration key for:',
@@ -452,7 +470,7 @@ def get_config(
     if config_ton_http_api is not None:
         file_path = Path(os.getcwd()) / Path(local_config.name)
         if not file_path.exists():
-            os.system(f'cp {local_config.name}')
+            os.system(f'cp {file_path} {create_config_path}')
         else:
             os.system(f'cp {file_path} {config_ton_http_api}')
     raise message(f'Created config-file on path: "{create_config_path}"', exit_after=True)
