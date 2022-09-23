@@ -40,7 +40,7 @@ echo "${keystore_contents}" >~/keystore/keystore.ks
 
 cat > /etc/systemd/system/ton-http-api.service <<- EOM
 [Unit]
-Description=ton-http-api service. Created by https://toncenter.com/
+Description=ton-http-api service. Created by https://toncenter.com/ & improved by "tonbakers"
 After=network.target
 StartLimitIntervalSec=0
 StartLimitBurst=5
@@ -64,16 +64,26 @@ systemctl daemon-reload
 systemctl restart ton-http-api
 
 echo -e "${COLOR}[3/4]${ENDC} installing docker engine"
-[ -f /usr/bin/docker ] && { echo -e "Docker engine already installed" } || sudo apt update
-sudo apt install apt-transport-https ca-certificates curl software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt update
-sudo apt install docker-ce
+if [ -f /usr/bin/docker ]; then
+  echo -e "Docker engine already installed"
+else
+  echo "Installing docker-engine"
+  sudo apt update -y
+  sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  sudo apt update -y
+  sudo apt install -y docker-ce
+
+fi
 
 echo -e "${COLOR}[4/4]${ENDC} installing docker-compose"
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-docker-compose --version && echo "docker-compose command not found! Try to install it by your self" || echo "docker-compose successfully installed"
+if [ -f /usr/local/bin/docker-compose ]; then
+  echo "docker-compose already installed"
+else
+  echo "Installing docker-compose"
+  sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  sudo chmod +x /usr/local/bin/docker-compose
+  docker-compose --version && echo "docker-compose command not found! Try to install it by your self."
 
 exit 0
