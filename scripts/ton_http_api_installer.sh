@@ -14,7 +14,7 @@ do
 	esac
 done
 
-echo -e "${COLOR}[1/4]${ENDC} Installing ton-http-api"
+echo -e "${COLOR}[1/4]${ENDC} Installing \"ton-http-api\""
 cd /usr/src
 rm -rf ton-http-api
 
@@ -24,7 +24,7 @@ cd /usr/src/ton-http-api/ton-http-api
 python3 setup.py install
 
 
-echo -e "${COLOR}[2/4]${ENDC} Add to startup"
+echo -e "${COLOR}[2/4]${ENDC} Add \"ton-http-api\" to startup"
 
 liteserver_config_path="/usr/bin/ton/global.config.json"
 libtonlibjson_path="/usr/bin/ton/tonlib/libtonlibjson.so"
@@ -65,9 +65,9 @@ EOM
 systemctl daemon-reload
 systemctl restart ton-http-api
 
-echo -e "${COLOR}[3/4]${ENDC} installing docker engine"
+echo -e "${COLOR}[3/4]${ENDC} Installing \"docker-engine\""
 if [ -f /usr/bin/docker ]; then
-  echo -e "Docker engine already installed"
+  echo -e "\"Docker-engine\" already installed"
 else
   echo "Installing docker-engine"
   sudo apt update -y
@@ -78,14 +78,14 @@ else
   sudo apt install -y docker-ce
 fi
 
-echo -e "${COLOR}[4/4]${ENDC} installing docker-compose"
+echo -e "${COLOR}[4/4]${ENDC} Installing \"docker-compose\""
 if [ -f /usr/local/bin/docker-compose ]; then
-  echo "docker-compose already installed"
+  echo "\"Docker-compose\" already installed"
 else
-  echo "Installing docker-compose"
+  echo "Installing \"docker-compose\""
   sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
   sudo chmod +x /usr/local/bin/docker-compose
-  docker-compose --version && echo "docker-compose command not found! Try to install it by your self."
+  docker-compose --version && echo "\"docker-compose\" command not found! Try to install it by your self."
 fi
 
 exit 0
