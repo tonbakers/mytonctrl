@@ -2,6 +2,10 @@
 
 set -e
 
+COLOR='\033[92m'
+ENDC='\033[0m'
+
+
 if [ "$(id -u)" != "0" ]; then
 	echo "Please run script as root"
 	exit 1
@@ -31,7 +35,8 @@ libtonlibjson_path="/usr/bin/ton/tonlib/libtonlibjson.so"
 
 server_config="--host $(hostname -I) --port 8073"
 ton_config="--liteserver-config ${liteserver_config_path} --cdll-path ${libtonlibjson_path} --parallel-requests-per-liteserver 100 --tonlib-keystore ~/keystore"
-pyton_executable_path="/usr/bin/python3 ton-http-api/pyTON"
+mytonctrl_sources="/usr/src/mytonctrl"
+
 if [ -d ~/keystore ]; then
   cp -r ~/keystore /tmp
   rm -rf ~/keystore
@@ -43,7 +48,8 @@ fi
 cat > /etc/systemd/system/ton-http-api.service <<- EOM
 [Unit]
 Description=ton-http-api service. Created by https://toncenter.com/ & improved by "tonbakers"
-After=network.target
+Requires=docker.service
+After=network.target,docker.service
 StartLimitIntervalSec=0
 StartLimitBurst=5
 StartLimitIntervalSec=10
@@ -52,8 +58,8 @@ StartLimitIntervalSec=10
 Type=simple
 Restart=always
 RestartSec=30
-ExecStart=${pyton_executable_path} ${server_config} ${ton_config}
-ExecStopPost=/bin/echo "Stopping ton-http-api. This operation can take few minutes."
+ExecStart=docker-compose -f ${mytonctrl_sources}/docker-compose.yaml build && docker-compose -f ${mytonctrl_sources}/docker-compose.yaml up -d ton-http-api
+ExecStopPost=echo "Stopping ton-http-api. This operation can take few minutes." | wall
 User=${user}
 LimitNOFILE=infinity
 LimitNPROC=infinity
