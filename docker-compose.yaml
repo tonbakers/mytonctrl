@@ -46,13 +46,13 @@ services:
       - TON_API_LOGS_JSONIFY
       - TON_API_LOGS_LEVEL
       - TON_API_TONLIB_LITESERVER_CONFIG=/run/secrets/liteserver_config
-      - TON_API_TONLIB_KEYSTORE
-      - TON_API_TONLIB_PARALLEL_REQUESTS_PER_LITESERVER
-      - TON_API_TONLIB_CDLL_PATH
+      - TON_API_TONLIB_KEYSTORE=./keystore/keystore.ks"
+      - TON_API_TONLIB_PARALLEL_REQUESTS_PER_LITESERVER=30
+      - TON_API_TONLIB_CDLL_PATH=/usr/bin/ton/tonlib/libtonlibjson.so
       - TON_API_TONLIB_REQUEST_TIMEOUT=30
       - TON_API_GET_METHODS_ENABLED
       - TON_API_JSON_RPC_ENABLED
-      - TON_API_ROOT_PATH
+      - TON_API_ROOT_PATH=/
     networks:
       - internal
     secrets:
