@@ -392,12 +392,15 @@ def upgrade(url: str, branch: str) -> None:
     default='/usr/bin/ton/local.config.json',
     type=click.STRING,
     required=False,
+    help='Path where config must be created.',
 )
 @click.option(
     '--config-path',
     default='/usr/bin/ton/global.config.json',
     type=click.STRING,
     required=False,
+    help='Global config path, if file is not exists, '
+         'will try to request from "ton.org"',
 )
 @click.option(
     '--config-ton-http-api',
@@ -410,6 +413,8 @@ def upgrade(url: str, branch: str) -> None:
     default='https://ton.org/global-config.json',
     type=click.STRING,
     required=False,
+    help='Global config URL if want to download latest version '
+         'or file of global config not found.',
 )
 def get_config(
     path: Optional[str],
@@ -443,16 +448,10 @@ def get_config(
         with open(create_config_path, 'w+') as local_config:
             init_block = installer.GetInitBlock()
             lite_server_config = installer.GetLiteServerConfig()
-            ton_configuration.update({
-                'liteservers': [lite_server_config],
-                'validator': {
-                    'init_block': {
-                        'seqno': init_block['seqno'],
-                        'root_hash': installer.hex2b64(init_block['rootHash']),
-                        'file_hash': installer.hex2b64(init_block['fileHash']),
-                    },
-                },
-            })
+            ton_configuration['liteservers'] = [lite_server_config]
+            ton_configuration["validator"]["init_block"]["seqno"] = init_block["seqno"]
+            ton_configuration["validator"]["init_block"]["root_hash"] = mytoncore.hex2base64(init_block["rootHash"])
+            ton_configuration["validator"]["init_block"]["file_hash"] = mytoncore.hex2base64(init_block["fileHash"])
             json.dump(ton_configuration, local_config, indent=4)
     except FileNotFoundError as err:
         raise error(
