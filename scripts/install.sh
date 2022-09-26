@@ -78,7 +78,7 @@ fi
 
 # Запускаю установщик mytoninstaller.py
 echo -e "${COLOR}[3/4]${ENDC} Launching the mytoninstaller.py"
-user=$(ls -lh ${mydir}/${0} | cut -d ' ' -f 3)
+user=$(whoami)
 pip3 install poetry
 cd ${SOURCES_DIR}/mytonctrl
 poetry export --without-hashes --format=requirements.txt > ${SOURCES_DIR}/mytonctrl/requirements.txt
