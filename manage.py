@@ -585,5 +585,28 @@ def write_to_addr_file(
     )
 
 
+@click.command(
+    'use-tha',
+    help='Command to install or start using "ton-http-api"',
+)
+def use_ton_http_api() -> None:
+    ton_http_api_path = Path('/etc/systemd/system/ton-http-api.service')
+    if ton_http_api_path.exists():
+        raise message(
+            '"ton-http-api" unit already exists. Use following commands to run '
+            'or get status:',
+            'systemctl start ton-http-api',
+            'systemctl status ton-http-api',
+            exit_after=True,
+        )
+    else:
+        warning(
+            '"ton-http-api" service not found in "systemd" units. '
+            'Starting installation.',
+        )
+        installer.enable_ton_http_api()
+    raise message('Successfully installed and started "ton-http-api"', exit_after=True)
+
+
 if __name__ == '__main__':
     main()
