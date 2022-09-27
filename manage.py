@@ -1,7 +1,6 @@
 import json
 import os
 import getpass
-import struct
 
 import click
 import bcrypt
@@ -22,6 +21,7 @@ from mypylib.mypylib import MyPyClass
 
 from src.ton.factory import get_ton_controller
 from src.ton import status_messages
+from src.ton.addr import build_addr, parse_base64_address
 from src.utils.click import comma_separated
 from src.utils.click_messages import error, message, warning
 from src.utils.exceptions import BalanceIsTooLow, WalletAccountNotInitialized
@@ -511,10 +511,10 @@ def add_prometheus_user(username: str, config_path: str) -> None:
 
 @main.command(
     'write-addr',
-    help='Method for writing data to addr file',
+    help='Method to creating *.addr files from short address notation.',
 )
 @click.argument(
-    'RAW_ADDRESS',
+    'ADDRESS',
     type=click.STRING,
     required=True,
 )
@@ -524,31 +524,63 @@ def add_prometheus_user(username: str, config_path: str) -> None:
     required=True,
 )
 @click.option(
+    '-f', '--is-full',
+    default=False,
+    is_flag=True,
+    help='Use short or usual TON address.',
+)
+@click.option(
     '-n', '--negative-work-chain',
     default=False,
     is_flag=True,
-    help='Click cannot parse signed integers from cli, so to send "-1" work-chain '
+    help='"Click" cannot parse signed integers from cli, so to send "-1" work-chain '
          'use this flag.',
 )
-def write_to_addr_file(raw_address: str, file_path: str, negative_work_chain: bool) -> None:
-    workchain, address = raw_address.split(':')
-    address: str
-    workchain: int = int(workchain)
-    if negative_work_chain is True:
-        workchain = -workchain
-    message(
-        'Using address & work-chain to generate *.addr file:',
-        f'Workchain: {workchain}',
-        f'Address: {address}'
-    )
-    encoded_address = bytearray.fromhex(address)
-    encoded_workchain = struct.pack('i', workchain)
-    encoded_address.extend(encoded_workchain)
-    with open(file_path, 'wb+') as file:
-        file.write(encoded_address)
-    path = f'{os.getcwd()}' / Path(file_path)
-    message(
-        f'Successfully created *.addr file at: "{path}"',
+def write_to_addr_file(
+    address: str,
+    file_path: str,
+    negative_work_chain: bool,
+    is_full: bool,
+) -> None:
+    if is_full is True:
+        try:
+            workchain, address = address.split(':')
+        except ValueError:
+            raise error(
+                'Passed invalid raw address. '
+                'Accepted scheme only is: "workchain(int):hexadecimal_address(str)"',
+            )
+        address: str
+        workchain: int = int(workchain)
+        if negative_work_chain is True:
+            workchain = -workchain
+        message(
+            'Using address & work-chain to generate *.addr file:',
+            f'Workchain: {workchain}',
+            f'Address: {address}'
+        )
+        byte_address = build_addr(address, workchain)
+        with open(file_path, 'wb') as file:
+            file.write(byte_address)
+        path = f'{os.getcwd()}' / Path(file_path)
+        raise message(
+            f'Successfully created *.addr file at: "{path}"',
+            exit_after=True,
+        )
+
+    workchain, full_address, bounceable, crc_failed = parse_base64_address(address)
+    if crc_failed is True:
+        warning('CRC checksum validation failed!')
+    built_addr = build_addr(full_address, workchain)
+    with open(file_path, 'wb') as file:
+        file.write(built_addr)
+        path = f'{os.getcwd()}' / Path(file_path)
+        message(f'Successfully created *.addr file at: "{path}"')
+    raise message(
+        'Decoded short address data: ',
+        f'work-chain: {workchain}',
+        f'full-address: {full_address}',
+        f'bounceable: {bounceable}',
         exit_after=True,
     )
 
