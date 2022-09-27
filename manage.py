@@ -585,7 +585,7 @@ def write_to_addr_file(
     )
 
 
-@click.command(
+@main.command(
     'use-tha',
     help='Command to install or start using "ton-http-api"',
 )
