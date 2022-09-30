@@ -11,6 +11,7 @@ from prometheus_client.metrics import Summary
 
 from mytoncore import MyTonCore, local
 from src.ton.factory import get_ton_controller
+from src.ton.addr import parse_base64_address
 from src.utils.click_messages import error, message, warning
 
 ton_core: MyTonCore = get_ton_controller()
@@ -46,10 +47,11 @@ def get_metrics():
             if validator_info.wallet_address in VALIDATOR_UNITS_MAP:
                 continue
             if validator_info.wallet_address is not None:
+                _, full_address, _, _ = parse_base64_address(validator_info.wallet_address)
                 VALIDATOR_UNITS_MAP[validator_info.wallet_address]: Summary = Summary(
                     name='validator_efficiency',
                     documentation='The gauge metric to show TON validators efficiency.',
-                    unit=validator_info.wallet_address,
+                    unit=full_address,
                 )
                 continue
             warning(
