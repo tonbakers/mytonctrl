@@ -43,24 +43,19 @@ def get_metrics():
     message(f'Fetched info for "{len(data)}" validators. Elapsed time: {fetching_end - fetching_start} sec')
     for validator_info in data:
         if validator_info.online is True:
-            if validator_info.wallet_address is None and validator_info.adnl_address not in VALIDATOR_UNITS_MAP:
-                VALIDATOR_UNITS_MAP[validator_info.adnl_address]: Summary = Summary(
-                    name='validator_efficiency',
-                    documentation='The gauge metric to show TON validators efficiency.',
-                    unit=validator_info.adnl_address,
-                )
-            if (
-                validator_info.wallet_address is not None
-                and validator_info.adnl_address is not None in VALIDATOR_UNITS_MAP
-            ):
-                VALIDATOR_UNITS_MAP[validator_info.wallet_address] = Summary(
+            if validator_info.wallet_address in VALIDATOR_UNITS_MAP:
+                continue
+            if validator_info.wallet_address is not None:
+                VALIDATOR_UNITS_MAP[validator_info.wallet_address]: Summary = Summary(
                     name='validator_efficiency',
                     documentation='The gauge metric to show TON validators efficiency.',
                     unit=validator_info.wallet_address,
                 )
-            if validator_info.wallet_address is not None and validator_info.adnl_address in VALIDATOR_UNITS_MAP:
-                metric: Summary = VALIDATOR_UNITS_MAP.pop(validator_info.adnl_address)
-                VALIDATOR_UNITS_MAP[validator_info.wallet_address]: Summary = metric
+                continue
+            warning(
+                'Failed to get wallet address '
+                f'for validator with public key: "{validator_info.pubkey}"'
+            )
     online_validators: List[ValidatorInfo] = [validator for validator in data if validator.online is True]
     offline_validators: List[ValidatorInfo] = [validator for validator in data if validator.online is False]
     message(
@@ -70,10 +65,9 @@ def get_metrics():
     )
     for validator_info in data:
         if validator_info.online is True:
-            unit_name = validator_info.wallet_address or validator_info.adnl_address
-            metric: Optional[Summary] = VALIDATOR_UNITS_MAP.get(unit_name)
+            metric: Optional[Summary] = VALIDATOR_UNITS_MAP.get(validator_info.wallet_address)
             if metric is None:
-                error(f'Metric instance not found for unit: "{unit_name}"')
+                error(f'Metric instance not found for unit: "{validator_info.wallet_address}"')
                 continue
             metric.observe(float(validator_info.efficiency))
     message('Data successfully stored.')
