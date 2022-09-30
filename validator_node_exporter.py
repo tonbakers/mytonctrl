@@ -20,7 +20,7 @@ VALIDATOR_UNITS_MAP: Dict[str, Summary] = {}
 
 
 class ValidatorInfo(BaseModel):
-    efficiency: Decimal
+    efficiency: Decimal = 0.0
     online: bool
     pubkey: str
     adnl_address: str = Field(..., alias='adnlAddr')
