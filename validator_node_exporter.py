@@ -66,8 +66,8 @@ def get_metrics():
     for validator_info in data:
         if validator_info.online is True:
             metric: Optional[Summary] = VALIDATOR_UNITS_MAP.get(validator_info.wallet_address)
-            if metric is None:
-                error(f'Metric instance not found for unit: "{validator_info.wallet_address}"')
+            if validator_info.wallet_address is None and metric is None:
+                error(f'Metric instance not found for validator with public key: "{validator_info.adnl_address}"')
                 continue
             metric.observe(float(validator_info.efficiency))
     message('Data successfully stored.')
