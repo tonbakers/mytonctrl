@@ -21,8 +21,8 @@ VALIDATOR_UNITS_MAP: Dict[str, Histogram] = {}
 
 class ValidatorInfo(BaseModel):
     efficiency: Decimal = 0.0
-    online: bool
-    pubkey: str
+    online: bool = False
+    pubkey: str = 'UNDEFINED'
     adnl_address: str = Field(..., alias='adnlAddr')
     wallet_address: Optional[str] = Field(None, alias='walletAddr')
 
