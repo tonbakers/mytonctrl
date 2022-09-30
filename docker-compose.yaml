@@ -12,6 +12,7 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
+    container_name: prometheus
     command:
       - --web.config.file=web.yml
     ports:
@@ -19,14 +20,8 @@ services:
     environment:
       - PROMETHEUS_DISABLE_CREATED_SERIES=True
     volumes:
-      - type: bind
-        source: ./prometheus.yml
-        target: /prometheus/prometheus.yml
-        read_only: true
-      - type: bind
-        source: ./prometheus-web-config.yml
-        target: /prometheus/web.yml
-        read_only: true
+      - ./prometheus.yml:/prometheus/prometheus.yml
+      - ./prometheus-web-config.yml:/prometheus/web.yml
     restart: always
 
 
