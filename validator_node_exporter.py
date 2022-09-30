@@ -56,7 +56,7 @@ def get_metrics():
                 VALIDATOR_UNITS_MAP[validator_info.wallet_address] = Summary(
                     name='validator_efficiency',
                     documentation='The gauge metric to show TON validators efficiency.',
-                    unit=validator_info.adnl_address,
+                    unit=validator_info.wallet_address,
                 )
             if validator_info.wallet_address is not None and validator_info.adnl_address in VALIDATOR_UNITS_MAP:
                 metric: Summary = VALIDATOR_UNITS_MAP.pop(validator_info.adnl_address)
