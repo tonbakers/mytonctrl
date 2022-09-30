@@ -7,7 +7,7 @@ from pydantic.main import BaseModel
 from pydantic.fields import Field
 from pydantic.error_wrappers import ValidationError
 from prometheus_client.exposition import start_http_server
-from prometheus_client.metrics import Summary
+from prometheus_client.metrics import Histogram
 
 from mytoncore import MyTonCore, local
 from src.ton.factory import get_ton_controller
@@ -16,7 +16,7 @@ from src.utils.click_messages import error, message, warning
 
 ton_core: MyTonCore = get_ton_controller()
 
-VALIDATOR_UNITS_MAP: Dict[str, Summary] = {}
+VALIDATOR_UNITS_MAP: Dict[str, Histogram] = {}
 
 
 class ValidatorInfo(BaseModel):
@@ -48,7 +48,7 @@ def get_metrics():
                 continue
             if validator_info.wallet_address is not None:
                 _, full_address, _, _ = parse_base64_address(validator_info.wallet_address)
-                VALIDATOR_UNITS_MAP[validator_info.wallet_address]: Summary = Summary(
+                VALIDATOR_UNITS_MAP[validator_info.wallet_address]: Histogram = Histogram(
                     name='validator_efficiency',
                     documentation='The gauge metric to show TON validators efficiency.',
                     unit=full_address,
@@ -67,7 +67,7 @@ def get_metrics():
     )
     for validator_info in data:
         if validator_info.online is True:
-            metric: Optional[Summary] = VALIDATOR_UNITS_MAP.get(validator_info.wallet_address)
+            metric: Optional[Histogram] = VALIDATOR_UNITS_MAP.get(validator_info.wallet_address)
             if validator_info.wallet_address is None and metric is None:
                 error(f'Metric instance not found for validator with public key: "{validator_info.adnl_address}"')
                 continue
