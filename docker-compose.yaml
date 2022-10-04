@@ -10,21 +10,6 @@ services:
     restart: always
 
 
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    command:
-      - --web.config.file=web.yml
-    ports:
-      - "9090:9090"
-    environment:
-      - PROMETHEUS_DISABLE_CREATED_SERIES=True
-    volumes:
-      - ./prometheus.yml:/prometheus/prometheus.yml
-      - ./prometheus-web-config.yml:/prometheus/web.yml
-    restart: always
-
-
   ton-http-api:
     image: toncenter/ton-http-api
     build:
@@ -33,21 +18,21 @@ services:
     ports:
       - ${TON_API_HTTP_PORT:-8081}:8081
     environment:
-      - TON_API_CACHE_ENABLED
-      - TON_API_CACHE_REDIS_ENDPOINT
-      - TON_API_CACHE_REDIS_PORT
-      - TON_API_CACHE_REDIS_TIMEOUT
-      - TON_API_LOGS_JSONIFY
-      - TON_API_LOGS_LEVEL
-      - TON_API_TONLIB_LITESERVER_CONFIG=/run/secrets/liteserver_config
-      - TON_API_TONLIB_KEYSTORE=/keystore
-      - TON_API_TONLIB_PARALLEL_REQUESTS_PER_LITESERVER=30
-      - TON_API_TONLIB_CDLL_PATH
-      - TON_API_TONLIB_REQUEST_TIMEOUT=120
-      - TON_API_GET_METHODS_ENABLED
-      - TON_API_JSON_RPC_ENABLED
-      - TON_API_ROOT_PATH
-      - TON_API_WEBSERVERS_WORKERS=5
+      TON_API_CACHE_ENABLED:
+      TON_API_CACHE_REDIS_ENDPOINT:
+      TON_API_CACHE_REDIS_PORT:
+      TON_API_CACHE_REDIS_TIMEOUT:
+      TON_API_LOGS_JSONIFY:
+      TON_API_LOGS_LEVEL:
+      TON_API_TONLIB_LITESERVER_CONFIG: /run/secrets/liteserver_config
+      TON_API_TONLIB_KEYSTORE: /keystore
+      TON_API_TONLIB_PARALLEL_REQUESTS_PER_LITESERVER: 30
+      TON_API_TONLIB_CDLL_PATH:
+      TON_API_TONLIB_REQUEST_TIMEOUT: 120
+      TON_API_GET_METHODS_ENABLED:
+      TON_API_JSON_RPC_ENABLED:
+      TON_API_ROOT_PATH:
+      TON_API_WEBSERVERS_WORKERS: 5
     restart: unless-stopped
     networks:
       - internal
@@ -61,10 +46,53 @@ services:
         retries: 12
 
 
+  postgres:
+    image: postgres:14.5
+    container_name: monitor_db
+    hostname: monitor_db
+    environment:
+      POSTGRES_USER: monitor
+      POSTGRES_PASSWORD: s00pa_secret
+      POSTGRES_DB: validators_monitor
+      PG_DATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - monitor-data:/var/lib/postgresql/data
+    networks:
+      - internal
+    restart: always
+
+
+# TODO: Remove if not needed
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.8-management
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      HOSTNAME: rabbitmq
+    ports:
+      - "5672:5672"
+      - "5673:5673"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+#    logging:
+#      driver: none
+    networks:
+      - internal
+    restart: always
+
 secrets:
   liteserver_config:
     file: ${TON_API_TONLIB_LITESERVER_CONFIG:-/usr/bin/ton/local.config.json}
 
+
+volumes:
+  rabbitmq-data:
+  monitor-data:
 
 networks:
   internal:
