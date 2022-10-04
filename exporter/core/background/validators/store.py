@@ -1,5 +1,7 @@
 import typing as t
 
+from sqlalchemy.sql.expression import select
+
 from exporter.database.session import AsyncSession
 
 from .serializers import ValidatorStatistic
@@ -17,25 +19,35 @@ async def create_validator(
         adnl_address=adnl_address,
         public_key=public_key,
     )
-    session
+    session.add(validator)
+    await session.flush()
+    await session.refresh(validator)
+    await session.commit()
+    return validator
 
 
-async def get_validators() -> t.List[Validator]:
-    pass
-
-
-async def store_validator_stats(stats: ValidatorStatistic) -> Validator:
-    async with AsyncSession() as session:
-        print('Creating')
-        stats = Validator(
-            wallet_address=stats.wallet_address,
-            adnl_address=stats.adnl_address,
-            public_key=stats.public_key,
+async def get_validators(session: AsyncSession) -> t.List[Validator]:
+    return (
+        await session.execute(
+            select(Validator),
         )
-        await session.add(stats)
-        await session.flush()
-        await session.refresh(stats)
-        return stats
+    ).scalars().all()
+
+
+async def store_validator_stats(
+    session: AsyncSession,
+    stats: ValidatorStatistic,
+) -> Validator:
+    print('Creating')
+    created_stats = Validator(
+        wallet_address=stats.wallet_address,
+        adnl_address=stats.adnl_address,
+        public_key=stats.public_key,
+    )
+    session.add(created_stats)
+    await session.flush()
+    await session.refresh(created_stats)
+    return created_stats
 
 
 async def get_validator_stats_by_address(

@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import sqltypes
 from sqlalchemy.sql.schema import Column, ForeignKey
@@ -19,6 +21,6 @@ class ValidatorStatistic(Base):
     __tablename__ = 'validator_statistic'
 
     id = Column(sqltypes.Integer, primary_key=True)
-    efficiency = Column(sqltypes.DECIMAL, nullable=False, index=True, default=0.0)
+    efficiency = Column(sqltypes.DECIMAL, nullable=False, index=True, default=Decimal(0.0))
     online = Column(sqltypes.Boolean, nullable=False, index=True, default=False)
     validator_id = Column(sqltypes.Integer, ForeignKey('validator.id', ondelete='SET NULL'))

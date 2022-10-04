@@ -14,7 +14,7 @@ def create_app(title: str = config.APP_TITLE) -> FastAPI:
     
     @application.on_event('startup')
     async def startup() -> None:
-        job_get_and_store_validators_data()
+        await job_get_and_store_validators_data()
     return application
 
 
