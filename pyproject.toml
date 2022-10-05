@@ -12,9 +12,15 @@ pydantic = "1.10.2"
 crc16 = "0.1.1"
 requests = "2.28.1"
 psutil = "5.9.2"
-prometheus-client = "0.14.1"
 bcrypt = "4.0.0"
-PyYAML = "6.0"
+fastapi = "0.85.0"
+uvicorn = "0.18.3"
+uvloop = "0.17.0"
+SQLAlchemy = "1.4.41"
+alembic = "1.8.1"
+starlette = "0.20.4"
+asyncpg = "0.26.0"
+psycopg2-binary = "2.9.3"
 
 [tool.poetry.dev-dependencies]
 
